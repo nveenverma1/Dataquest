@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<!-- saved from url=(0111)https://app.dataquest.io/m/67/introduction-to-natural-language-processing/5/assembling-a-matrix-of-unique-words -->
+<html lang="en" class="wf-industry-n3-active wf-ingra-n4-active wf-ingra-n2-active wf-merriweather-n3-active wf-merriweather-n7-active wf-industry-n2-active wf-active"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>.async-hide { opacity: 0 !important}</style><script type="text/javascript" async="" src="./5_files/main.2.1.4f71e053.js"></script><script type="text/javascript" async="" src="./5_files/loader.2.1.js"></script><script type="text/javascript" async="" src="./5_files/js"></script><script async="" src="./5_files/profitwell.js"></script><script type="text/javascript" async="" src="./5_files/analytics.js"></script><script src="./5_files/inferredEvents.js" async=""></script><script src="./5_files/1208964489120563" async=""></script><script src="./5_files/identity.js" async=""></script><script type="text/javascript" async="" src="./5_files/fbevents.js"></script><script type="text/javascript" async="" src="./5_files/gtm.js"></script><script type="text/javascript" async="" src="./5_files/insight.min.js"></script><script type="text/javascript" async="" src="./5_files/qevents.js"></script><script type="text/javascript" async="" src="./5_files/mf5oz4we"></script><script type="text/javascript" async="" src="./5_files/fbds.js"></script><script type="text/javascript" async="" src="./5_files/analytics.min.js"></script><script type="text/javascript" async="" src="./5_files/recaptcha__en.js"></script><script src="./5_files/nmj4kuc.js" async=""></script><script>var optimize_container_ids = {}
+  var stage_or_prod_id = window.location.host === 'app.dataquest.io' ? 'GTM-PNQ6824' : 'GTM-KFF7W4B';
+  optimize_container_ids[stage_or_prod_id] = true;
+  (function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+  h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+  (a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+  })(window,document.documentElement,'async-hide','dataLayer',4000,
+  optimize_container_ids);</script><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="fragment" content="!"><title idle-disabled="true">Introduction To Natural Language Processing | Dataquest</title><meta name="description" content="Learn Python and R for data science. Learn by coding and working with data in your browser. Build your portfolio with projects and become a data scientist."><script>(function(d) {
+      var config = {
+        kitId: 'nmj4kuc',
+        scriptTimeout: 3000,
+        async: true
+      },
+      h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+    })(document);</script><script src="./5_files/api.js" async="" defer="defer"></script><link rel="stylesheet" href="./5_files/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous"><style>.loader {
+      z-index: 1000;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: #f9f9fb;
+    }
+    .loader .top {
+      transition: all ease 0.25;
+      padding: 0 0 0 40px;
+      background-image: linear-gradient(90deg,#30394b,#4c5361);
+      height: 90px;
+      overflow: hidden;
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-align: center;
+          -ms-flex-align: center;
+              align-items: center;
+    }
+    .loader .message {
+      font-family: "ingra", sans-serif;
+      font-size: 14px;
+      color: white;
+      margin-left: 20px;
+    }
+
+    .rocket {
+      width: 25px;
+      height: 25px;
+      background-size: contain;
+      background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAFiQAABYkBbWid+gAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAATdEVYdFRpdGxlAExvZ28tT24tTGlnaHQVgXW8AAAEuUlEQVRYhb2YXYhVVRTHf+fOOIofjVYPLmdMmgqFRAO1PBGiDyGVRkZlOEQiQaZTaYp9oX1ASEUQOKYFKWMQRIEWWjmkMFlupXTCypeUCh2XmorTZKkzc08Pe92Z03Fk7jne23pZe6+z/mv92XufvdfewciRUymVqLpBACLh+VLFzJUqkKqbDPwMHFB1t5QqbkkIqroG4FugDrgJ2KPqFpUidnAlU6zqKoAPgYfM9DkQAHdZ/yOgXiTszprjSkfwNXrJrQZmA7OAN80213wyS+YRVHX3AlvwI7ZAJNyY+L4QWAdEwH0i4WdZ8mQaQVV3PdBk5DYkyQGIhOuBD8ynyTCppTILCFgBDAd+AZ5SdUOBV4G7gQqgGXgRWASEwI2GeSJtotRTbGSOAcOAe4AvgJ3A9ITrPuA2YCawDegARomEf6XJl2WK641cG7AdmGHkImA5sBC4AEwC5phPm2Hq0ybLQvAx0022fUy0/tci4Vsi4bv47QZgsvk0JbDlIajqcsAE635seqDpszHXP00PSvhOsBjlIQjUAlXWPmT6D9PjY8lvNn0i4VtlMcpG8AbTp2OLvQXotG/7VZ0DJgN54EsA8z2diFEWgoW97LeCQSQ8hN9C8vj1OBX/w7wiErbGsL8nYhQlaffByPTQuFEkfFvVteC3lArgK5FwbwI7OBGjLAQLa6pO1VWKhF0xkq1Aa18gVVdJ79Se6MvncpJ2igt/5wDSraU6w8RjFCVpCT4Sa49NgRt3mRj9StEEVd1oYH7MlOaMnBJrz7dYRUmaEVyG38cuWH+hqruqP5D5LLbuRYuxrBwEbzW9EX/wjwCWFIFbYr7t+PIrHqukBAsnwI/AWmsvVXXXXg5g35Zadx1wMBGrNATtCBPrHgFeAvbia8LNqm5gH5iBwGbz+R542bAAYveZ0hDEV8WFtdchEl4EHgROAXcAG/rAbLBvZ4AHRMIL9G4xRd+biyJoJdMe695vtiPAPPwRN0/Vva/qBqm6KlW3MfatXiQsHHNzTO8p9qaXZg1+Y7o+NqUtwA5rLwCO4ovT+Wbbhi//C68OD5t9V7FJ0xx1W4FVwNXAXFU3GHgeuC7mc00CMxs4qOpex49mNf4s3lps0lR3ElW3Dl/SR/h1CXAO2I0flZ/MNh6//m6nt7AoYNaLhEVfntIWC8/iL+a1QBewBl9WtSf8NgOoumHASvxeOABQ4Lk0CbPc6mYAbwCPioQH499qtPHpgKj7qDzZmMCMBTYBK0XC5rIStISBSPifuq5W19wZETQDRATTjsniXf1hipFMLwsiYTRa19Qdj12A8uRqeoPme9o12jhY9J2JWchlJjhK1y7JExyexL5PY6R69rU8uXzM3eXI/1CjjalfFTITzJGfac1ZBdtFqrbjq+UTAdFOgBptrMauqRHBtP+NYEQQJG0n5fGT7VSPaad6TJs0nALopqLHL0f+EkzZCPYl43R15XDOrqqmfcVxdZnI9CVZX7cK661nrZ1j6PSI4AWAKXy34wjsHsK57vP2uBARdF0apn/JOsWbgH+A9wq2gHwrvt7b/zdDDgAcluUd+LO4E/gkS67ML6w12jigTRo6+/M7ri4IcSN+lWfOZMnzLzfFicWWhq1kAAAAAElFTkSuQmCC");
+    }
+    .loader .rocket {
+      -webkit-animation: loading_anim linear 4s;
+              animation: loading_anim linear 4s;
+      -webkit-animation-iteration-count: infinite;
+              animation-iteration-count: infinite;
+    }
+
+    .dq_text {
+      width: 140px;
+      height: 15px;
+      margin: 10px 0 10px 10px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgIHhtbG5zOmNjPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9ucyMiCiAgIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB2ZXJzaW9uPSIxLjEiCiAgIHdpZHRoPSI0NjUuMzU5OTkiCiAgIGhlaWdodD0iNDguMzQ0NzgiCiAgIGlkPSJzdmcyIj4KICA8dGl0bGUKICAgICBpZD0idGl0bGU4Ij5Mb2dvLU9uLURhcms8L3RpdGxlPgogIDxtZXRhZGF0YQogICAgIGlkPSJtZXRhZGF0YTMxIj4KICAgIDxyZGY6UkRGPgogICAgICA8Y2M6V29yawogICAgICAgICByZGY6YWJvdXQ9IiI+CiAgICAgICAgPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CiAgICAgICAgPGRjOnR5cGUKICAgICAgICAgICByZGY6cmVzb3VyY2U9Imh0dHA6Ly9wdXJsLm9yZy9kYy9kY21pdHlwZS9TdGlsbEltYWdlIiAvPgogICAgICAgIDxkYzp0aXRsZT5Mb2dvLU9uLURhcms8L2RjOnRpdGxlPgogICAgICA8L2NjOldvcms+CiAgICA8L3JkZjpSREY+CiAgPC9tZXRhZGF0YT4KICA8ZGVmcwogICAgIGlkPSJkZWZzNCI+CiAgICA8c3R5bGUKICAgICAgIGlkPSJzdHlsZTYiIC8+CiAgPC9kZWZzPgogIDxwYXRoCiAgICAgZD0ibSAxNywwLjY2IGMgMTQuNjYsMCAyMywxMSAyMywyMy40IDAsMTIuNCAtOC4yLDIzLjYgLTIzLDIzLjYgbCAtMTcsMCAwLC00NyAxNywwIHogbSAtMC4xMywzOS44OCBjIDkuNzUsMCAxNS4zMywtNy41MyAxNS4zMywtMTYuNDEgMCwtOC44OCAtNS42MSwtMTYuNDEgLTE1LjI2LC0xNi40MSBsIC05LjE1LDAgMCwzMi44MSA5LjA4LDAgMCwwLjAxIHoiCiAgICAgaWQ9InN2Z18xIgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+CiAgPHBhdGgKICAgICBkPSJtIDY0LjU5LDM4LjExIC00LjU3LDkuNzUgLTguMiwwIDAsLTEgMjEuNzcsLTQ2LjQgMy42MywwIDIxLjY1LDQ2LjQgMCwxIC04LjE0LDAgLTQuNjQsLTkuNzUgLTIxLjUsMCB6IG0gMi41NiwtNi41OSAxNi40OCwwIC04LjIsLTE4LjgzIC04LjI4LDE4LjgzIHoiCiAgICAgaWQ9InN2Z18yIgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+CiAgPHBhdGgKICAgICBkPSJtIDEwNi44NSw3LjU1IDAsLTYuOTMgMzUsMCAwLDYuOTMgLTEzLjY5LDAgMCw0MC4xNSAtNy42NywwIDAsLTQwLjE1IC0xMy42NCwwIHoiCiAgICAgaWQ9InN2Z18zIgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+CiAgPHBhdGgKICAgICBkPSJtIDE2Mi41MywzOC4xMSAtNC41Nyw5Ljc1IC04LjIsMCAwLC0xIDIxLjc5LC00Ni40IDMuNjMsMCAyMS42NSw0Ni40IDAsMSAtOC4xNCwwIC00LjY0LC05Ljc1IC0yMS41MiwwIHogbSAyLjU2LC02LjU5IDE2LjUsMCAtOC4yLC0xOC44MyAtOC4zLDE4LjgzIHoiCiAgICAgaWQ9InN2Z180IgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+CiAgPHBhdGgKICAgICBkPSJtIDI1Ni41OSw0OC4xNyAtNy4xMywwIC0yLjc0LC00LjIgYSAyNC4wOCwyNC4wOCAwIDAgMSAtMTQuMzIsNC4zNyBjIC0xMi45MSwwIC0yMy42NywtOS40OCAtMjMuNjcsLTI0LjIxIDAsLTE0LjQ2IDkuODIsLTI0LjA3IDI0LC0yNC4wNyAxMi43MSwwIDIzLjk0LDguNzQgMjMuOTQsMjQuMDcgMCw2LjE5IC0xLjY4LDExLjMgLTQuODQsMTUuMjYgbCA0Ljc2LDcuNTggMCwxLjIgeiBtIC0yMy44NywtNy4xMyBjIDguODEsMCAxNi4wNywtNS41OCAxNi4wNywtMTYuOTUgMCwtMTEgLTcuMjYsLTE2Ljc0IC0xNi4xNCwtMTYuNzQgLTguODgsMCAtMTYsNiAtMTYsMTYuNzQgMC4wMSwxMC45NiA3LjI3LDE2Ljk1IDE2LjA4LDE2Ljk1IGwgLTAuMDEsMCB6IgogICAgIGlkPSJzdmdfNSIKICAgICBzdHlsZT0iZmlsbDojZmZmZmZmIiAvPgogIDxwYXRoCiAgICAgZD0ibSAyNzUuMjMsMzEuNTkgMCwtMzEuMjcgNy44LDAgMCwzMS4wNyBjIDAsNi4xOSA0LjY0LDkuNjIgMTAuNjIsOS42MiA1Ljk4LDAgMTAuNDksLTMuNDMgMTAuNDksLTkuNjIgbCAwLC0zMS4wNyA3LjczLDAgMCwzMS4yNyBjIDAsMTAuNDkgLTguMiwxNi40MSAtMTguMjIsMTYuNDEgLTEwLjAyLDAgLTE4LjQyLC01LjkyIC0xOC40MiwtMTYuNDEgeiIKICAgICBpZD0ic3ZnXzYiCiAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiIgLz4KICA8cGF0aAogICAgIGQ9Im0gMzYxLjg0LDcuNDggLTIwLjc4LDAgMCwxMi40OSAxOS42NCwwIDAsNi45MyAtMTkuNjQsMCAwLDEzLjY3IDIxLjE4LDAgMCw3LjEzIC0yOS4wNSwwIDAsLTQ3LjA4IDI4LjY1LDAgMCw2Ljg2IHoiCiAgICAgaWQ9InN2Z183IgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+CiAgPHBhdGgKICAgICBkPSJtIDM4Ni41MiwzNC4wNCBjIDAuMzQsNS4zMSA2LjEyLDcuMjYgMTEuMjMsNy4yNiA1LjExLDAgMTAuODksLTEuMjEgMTAuODksLTcuMDYgMCwtNi4xOSAtNi4zOSwtNi43OSAtMTEuODQsLTcuMzMgLTguNjEsLTAuNzQgLTE3LjE1LC0zLjUgLTE3LjE1LC0xMi45MSAwLC05LjY4IDguNTQsLTE0IDE3LjY5LC0xNCA4Ljk0LDAgMTcuNDIsNCAxNy42MiwxMy42NSBsIC03LjM3LDAgYyAtMC4zNCwtNSAtNS42NSwtNi42NiAtMTAuMjksLTYuNjYgLTQuMywwIC05Ljg5LDEuNDggLTkuODksNi43OSAwLDUuMzEgNS4zMSw2IDEwLjc2LDYuNzIgOS41NSwxLjA4IDE4LjI5LDMgMTguMjksMTMuNzkgMCwxMC4zNiAtOS43NSwxNCAtMTguNTYsMTQgLTkuMjEsMC4yIC0xOC44MywtNC4zNyAtMTksLTE0LjI2IGwgNy42NywwIC0wLjA1LDAuMDEgeiIKICAgICBpZD0ic3ZnXzgiCiAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiIgLz4KICA8cGF0aAogICAgIGQ9Im0gNDMwLjM2LDcuNTUgMCwtNi45MyAzNSwwIDAsNi45MyAtMTMuNjgsMCAwLDQwLjE1IC03LjY3LDAgMCwtNDAuMTUgLTEzLjY1LDAgeiIKICAgICBpZD0ic3ZnXzkiCiAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiIgLz4KPC9zdmc+Cg==");
+    }
+
+    @-webkit-keyframes loading_anim {
+      0% {
+        -webkit-transform: translateY(0);
+                transform: translateY(0);
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+                transform: translateY(0);
+      }
+      50% {
+        -webkit-transition: translateY(-50%);
+        transition: translateY(-50%);
+      }
+      75%, 100% {
+        -webkit-transform: translateY(-500%);
+                transform: translateY(-500%);
+      }
+    }
+
+    @keyframes loading_anim {
+      0% {
+        -webkit-transform: translateY(0);
+                transform: translateY(0);
+        opacity: 0;
+      }
+      25% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+                transform: translateY(0);
+      }
+      50% {
+        -webkit-transition: translateY(-50%);
+        transition: translateY(-50%);
+      }
+      75%, 100% {
+        -webkit-transform: translateY(-500%);
+                transform: translateY(-500%);
+      }
+    }
+    .ant-form-explain {
+      color: red;
+    }</style><link rel="apple-touch-icon" sizes="57x57" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-57x57.png"><link rel="apple-touch-icon" sizes="60x60" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-60x60.png"><link rel="apple-touch-icon" sizes="72x72" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-72x72.png"><link rel="apple-touch-icon" sizes="76x76" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-76x76.png"><link rel="apple-touch-icon" sizes="114x114" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-114x114.png"><link rel="apple-touch-icon" sizes="120x120" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-120x120.png"><link rel="apple-touch-icon" sizes="144x144" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-144x144.png"><link rel="apple-touch-icon" sizes="152x152" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-icon-180x180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Dataquest"><meta name="mobile-web-app-capable" content="yes"><meta name="theme-color" content="#fff"><meta name="application-name" content="Dataquest"><link rel="icon" type="image/png" sizes="32x32" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/favicon-16x16.png"><link rel="shortcut icon" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/favicon.ico"><link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 1)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-320x460.png"><link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 480px) and (-webkit-device-pixel-ratio: 2)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-640x920.png"><link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-640x1096.png"><link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-750x1294.png"><link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 3)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-1182x2208.png"><link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 736px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 3)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-1242x2148.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 1)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-748x1024.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 1)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-768x1004.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: landscape) and (-webkit-device-pixel-ratio: 2)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-1496x2048.png"><link rel="apple-touch-startup-image" media="(device-width: 768px) and (device-height: 1024px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2)" href="https://app.dataquest.io/icons-0de704297f9f471310abdd90188e8daf/apple-touch-startup-image-1536x2008.png"><link href="./5_files/app.e5155d826241948fb3ba.css" rel="stylesheet"><style type="text/css">.tk-merriweather{font-family:"merriweather",serif;}.tk-industry{font-family:"industry",sans-serif;}.tk-ingra{font-family:"ingra",sans-serif;}</style><style type="text/css">@font-face{font-family:tk-merriweather-n7;src:url(https://use.typekit.net/af/dacbbb/000000000000000000014a3f/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3) format("woff2"),url(https://use.typekit.net/af/dacbbb/000000000000000000014a3f/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3) format("woff"),url(https://use.typekit.net/af/dacbbb/000000000000000000014a3f/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3) format("opentype");font-weight:700;font-style:normal;}@font-face{font-family:tk-merriweather-n3;src:url(https://use.typekit.net/af/c19086/000000000000000000014a3b/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff2"),url(https://use.typekit.net/af/c19086/000000000000000000014a3b/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff"),url(https://use.typekit.net/af/c19086/000000000000000000014a3b/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("opentype");font-weight:300;font-style:normal;}@font-face{font-family:tk-industry-n3;src:url(https://use.typekit.net/af/a52963/00000000000000003b9adf50/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff2"),url(https://use.typekit.net/af/a52963/00000000000000003b9adf50/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff"),url(https://use.typekit.net/af/a52963/00000000000000003b9adf50/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("opentype");font-weight:300;font-style:normal;}@font-face{font-family:tk-industry-n2;src:url(https://use.typekit.net/af/9f132f/00000000000000003b9adf4e/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff2"),url(https://use.typekit.net/af/9f132f/00000000000000003b9adf4e/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff"),url(https://use.typekit.net/af/9f132f/00000000000000003b9adf4e/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("opentype");font-weight:200;font-style:normal;}@font-face{font-family:tk-ingra-n2;src:url(https://use.typekit.net/af/92b39d/00000000000000003b9acd66/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff2"),url(https://use.typekit.net/af/92b39d/00000000000000003b9acd66/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff"),url(https://use.typekit.net/af/92b39d/00000000000000003b9acd66/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("opentype");font-weight:200;font-style:normal;}@font-face{font-family:tk-ingra-n4;src:url(https://use.typekit.net/af/583f09/00000000000000003b9acd68/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/583f09/00000000000000003b9acd68/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/583f09/00000000000000003b9acd68/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;}</style><style type="text/css">@font-face{font-family:merriweather;src:url(https://use.typekit.net/af/dacbbb/000000000000000000014a3f/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3) format("woff2"),url(https://use.typekit.net/af/dacbbb/000000000000000000014a3f/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3) format("woff"),url(https://use.typekit.net/af/dacbbb/000000000000000000014a3f/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n7&v=3) format("opentype");font-weight:700;font-style:normal;}@font-face{font-family:merriweather;src:url(https://use.typekit.net/af/c19086/000000000000000000014a3b/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff2"),url(https://use.typekit.net/af/c19086/000000000000000000014a3b/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff"),url(https://use.typekit.net/af/c19086/000000000000000000014a3b/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("opentype");font-weight:300;font-style:normal;}@font-face{font-family:industry;src:url(https://use.typekit.net/af/a52963/00000000000000003b9adf50/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff2"),url(https://use.typekit.net/af/a52963/00000000000000003b9adf50/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("woff"),url(https://use.typekit.net/af/a52963/00000000000000003b9adf50/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n3&v=3) format("opentype");font-weight:300;font-style:normal;}@font-face{font-family:industry;src:url(https://use.typekit.net/af/9f132f/00000000000000003b9adf4e/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff2"),url(https://use.typekit.net/af/9f132f/00000000000000003b9adf4e/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff"),url(https://use.typekit.net/af/9f132f/00000000000000003b9adf4e/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("opentype");font-weight:200;font-style:normal;}@font-face{font-family:ingra;src:url(https://use.typekit.net/af/92b39d/00000000000000003b9acd66/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff2"),url(https://use.typekit.net/af/92b39d/00000000000000003b9acd66/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("woff"),url(https://use.typekit.net/af/92b39d/00000000000000003b9acd66/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n2&v=3) format("opentype");font-weight:200;font-style:normal;}@font-face{font-family:ingra;src:url(https://use.typekit.net/af/583f09/00000000000000003b9acd68/27/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff2"),url(https://use.typekit.net/af/583f09/00000000000000003b9acd68/27/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("woff"),url(https://use.typekit.net/af/583f09/00000000000000003b9acd68/27/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3) format("opentype");font-weight:400;font-style:normal;}</style><script async="" src="./5_files/modules-v49.js"></script><script src="./5_files/logger.min.js" async=""></script><script charset="utf-8" src="./5_files/vendors_jstimezonedetect.d519ef88c3ee569e132c.js"></script><link rel="stylesheet" type="text/css" href="./5_files/DqHeader.9c9c27fbad877d2e5da8.css"><script charset="utf-8" src="./5_files/DqHeader.877d53038bb6220daa80.js"></script><script charset="utf-8" src="./5_files/vendors_PercentageRing_ProfileView.209a2548eb392a3722b7.js"></script><script charset="utf-8" src="./5_files/PercentageRing.e0d3cafe01d77dca305c.js"></script><link rel="stylesheet" type="text/css" href="./5_files/NotificationsInMenu.ab452041da9538a810ff.css"><script async="" src="./5_files/saved_resource"></script><script charset="utf-8" src="./5_files/NotificationsInMenu.911c72346a130537068c.js"></script><style data-emotion=""></style><style id="beacon-stylesheet" type="text/css">#beacon-container{-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5}#beacon-container,#beacon-container *{-webkit-box-sizing:border-box;box-sizing:border-box}#beacon-container *{-webkit-overflow-scrolling:touch;-webkit-tap-highlight-color:rgba(0,0,0,0)}#BeaconContainer-root.is-mobile{--BlueConfigGlobalFontSize:14px}@media (min-width:330px){#BeaconContainer-root.is-mobile{--BlueConfigGlobalFontSize:15px}}@media (min-width:410px){#BeaconContainer-root.is-mobile{--BlueConfigGlobalFontSize:16px}}#BeaconContainer-root.is-mobile input,#BeaconContainer-root.is-mobile select,#BeaconContainer-root.is-mobile textarea{font-size:16px!important}#beacon-container a{color:_color(link,base);text-decoration:none}#beacon-container a:hover{color:_color(link,hover)}#beacon-container a.disabled{color:_color(text,muted);cursor:not-allowed}#beacon-container a.disabled:hover{color:_color(text,muted);text-decoration:none}#beacon-container-body{margin:0;overflow:hidden}</style><script charset="utf-8" src="./5_files/vendors_TheMission.5e24a5b72051a2b67cea.js"></script><link rel="stylesheet" type="text/css" href="./5_files/TheMission.0f63ad3965e0dfc442db.css"><script charset="utf-8" src="./5_files/TheMission.2505e61687789313a39e.js"></script><script charset="utf-8" src="./5_files/vendors_MissionReference.9e698a27220c342f79b9.js"></script><link rel="stylesheet" type="text/css" href="./5_files/MissionReference.4f31f1b4cdb71efd1b23.css"><script charset="utf-8" src="./5_files/MissionReference.610ed3423025f2ba506f.js"></script><link rel="stylesheet" type="text/css" href="./5_files/vendors_DqEditor.ffad3b87512c4e2b9d8d.css"><script charset="utf-8" src="./5_files/vendors_DqEditor.aafa87a057a5e09398d9.js"></script><link rel="stylesheet" type="text/css" href="./5_files/DqEditor.322c45e5a0a3573de624.css"><script async="" src="./5_files/MathJax.js"></script><script charset="utf-8" src="./5_files/DqEditor.3916caad5add9f46b720.js"></script><link rel="stylesheet" type="text/css" href="./5_files/vendors_MissionFileViewer_OutputAsTable.b27b9beb8f95f14bdda8.css"><script charset="utf-8" src="./5_files/vendors_MissionFileViewer_OutputAsTable.c2009c37066bd5ee124f.js"></script><link rel="stylesheet" type="text/css" href="./5_files/MissionFileViewer.82ce94f4d560748fdffb.css"><script charset="utf-8" src="./5_files/MissionFileViewer.1c8c7076abd33d2b78ce.js"></script><style id="detectElementResize" type="text/css">@keyframes resizeanim { from { opacity: 0; } to { opacity: 0; } } .resize-triggers { animation: 1ms resizeanim; visibility: hidden; opacity: 0; } .resize-triggers, .resize-triggers > div, .contract-trigger:before { content: " "; display: block; position: absolute; top: 0; left: 0; height: 100%; width: 100%; overflow: hidden; z-index: -1; } .resize-triggers > div { background: #eee; overflow: auto; } .contract-trigger:before { width: 200%; height: 200%; }</style><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_SVG_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax_SVG .MJX-monospace {font-family: monospace}
+.MathJax_SVG .MJX-sans-serif {font-family: sans-serif}
+#MathJax_SVG_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax_SVG {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax_SVG * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.mjx-svg-href {fill: blue; stroke: blue}
+.MathJax_SVG_Processing {visibility: hidden; position: absolute; top: 0; left: 0; width: 0; height: 0; overflow: hidden; display: block!important}
+.MathJax_SVG_Processed {display: none!important}
+.MathJax_SVG_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none; padding: 0; border: 0; margin: 0}
+.MathJax_SVG_LineBox {display: table!important}
+.MathJax_SVG_LineBox span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+.MathJax_SVG .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><script charset="utf-8" src="./5_files/vendors_pdf_maker.6f49a7dd2a5d9b3644c7.js"></script><script charset="utf-8" src="./5_files/vendors_avatar.11eaa43b127d8dacdaf1.js"></script><link rel="canonical" href="https://www.dataquest.io/m/67/introduction-to-natural-language-processing" data-react-helmet="true"><meta name="twitter:site" content="@dataquestio" data-react-helmet="true"><meta name="twitter:title" content="Introduction To Natural Language Processing | Dataquest" data-react-helmet="true"><meta name="og:title" content="Introduction To Natural Language Processing | Dataquest" data-react-helmet="true"><meta name="og:site_name" content="Dataquest" data-react-helmet="true"><meta name="fb:app_id" content="1068949113131184" data-react-helmet="true"><meta name="twitter:card" content="summary" data-react-helmet="true"><meta name="description" content="Learn about natural language processing with a Hacker News dataset. Includes tokenization, using cross validation and linear regression to make predictions." data-react-helmet="true"><meta name="twitter:description" content="Learn about natural language processing with a Hacker News dataset. Includes tokenization, using cross validation and linear regression to make predictions." data-react-helmet="true"><meta name="og:description" content="Learn about natural language processing with a Hacker News dataset. Includes tokenization, using cross validation and linear regression to make predictions." data-react-helmet="true"><meta name="og:url" content="https://www.dataquest.io/m/67/introduction-to-natural-language-processing" data-react-helmet="true"><script type="application/ld+json" data-react-helmet="true">{"@context":"http://schema.org","@type":"Organization","url":"https://www.dataquest.io","logo":"https://s3.amazonaws.com/dq-email/brand/dataquest_logo.svg"}</script></head><body cz-shortcut-listen="true"><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_SVG_Hidden"></div><svg><defs id="MathJax_SVG_glyphs"><path stroke-width="1" id="MJMATHI-50" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path stroke-width="1" id="MJMAIN-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path stroke-width="1" id="MJMATHI-41" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path stroke-width="1" id="MJMAIN-2223" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path><path stroke-width="1" id="MJMATHI-42" d="M231 637Q204 637 199 638T194 649Q194 676 205 682Q206 683 335 683Q594 683 608 681Q671 671 713 636T756 544Q756 480 698 429T565 360L555 357Q619 348 660 311T702 219Q702 146 630 78T453 1Q446 0 242 0Q42 0 39 2Q35 5 35 10Q35 17 37 24Q42 43 47 45Q51 46 62 46H68Q95 46 128 49Q142 52 147 61Q150 65 219 339T288 628Q288 635 231 637ZM649 544Q649 574 634 600T585 634Q578 636 493 637Q473 637 451 637T416 636H403Q388 635 384 626Q382 622 352 506Q352 503 351 500L320 374H401Q482 374 494 376Q554 386 601 434T649 544ZM595 229Q595 273 572 302T512 336Q506 337 429 337Q311 337 310 336Q310 334 293 263T258 122L240 52Q240 48 252 48T333 46Q422 46 429 47Q491 54 543 105T595 229Z"></path><path stroke-width="1" id="MJMAIN-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path><path stroke-width="1" id="MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path stroke-width="1" id="MJMATHI-79" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"></path><path stroke-width="1" id="MJMATHI-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path stroke-width="1" id="MJMAIN-31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path><path stroke-width="1" id="MJMAIN-2C" d="M78 35T78 60T94 103T137 121Q165 121 187 96T210 8Q210 -27 201 -60T180 -117T154 -158T130 -185T117 -194Q113 -194 104 -185T95 -172Q95 -168 106 -156T131 -126T157 -76T173 -3V9L172 8Q170 7 167 6T161 3T152 1T140 0Q113 0 96 17Z"></path><path stroke-width="1" id="MJMAIN-2026" d="M78 60Q78 84 95 102T138 120Q162 120 180 104T199 61Q199 36 182 18T139 0T96 17T78 60ZM525 60Q525 84 542 102T585 120Q609 120 627 104T646 61Q646 36 629 18T586 0T543 17T525 60ZM972 60Q972 84 989 102T1032 120Q1056 120 1074 104T1093 61Q1093 36 1076 18T1033 0T990 17T972 60Z"></path><path stroke-width="1" id="MJMATHI-6E" d="M21 287Q22 293 24 303T36 341T56 388T89 425T135 442Q171 442 195 424T225 390T231 369Q231 367 232 367L243 378Q304 442 382 442Q436 442 469 415T503 336T465 179T427 52Q427 26 444 26Q450 26 453 27Q482 32 505 65T540 145Q542 153 560 153Q580 153 580 145Q580 144 576 130Q568 101 554 73T508 17T439 -10Q392 -10 371 17T350 73Q350 92 386 193T423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 180T152 343Q153 348 153 366Q153 405 129 405Q91 405 66 305Q60 285 60 284Q58 278 41 278H27Q21 284 21 287Z"></path><path stroke-width="1" id="MJSZ1-220F" d="M158 656Q147 684 131 694Q110 707 69 710H55V750H888V710H874Q840 708 820 698T795 678T786 656V-155Q798 -206 874 -210H888V-250H570V-210H584Q618 -208 638 -197T663 -178T673 -155V710H270V277L271 -155Q283 -206 359 -210H373V-250H55V-210H69Q103 -208 123 -197T148 -178T158 -155V656Z"></path><path stroke-width="1" id="MJMATHI-69" d="M184 600Q184 624 203 642T247 661Q265 661 277 649T290 619Q290 596 270 577T226 557Q211 557 198 567T184 600ZM21 287Q21 295 30 318T54 369T98 420T158 442Q197 442 223 419T250 357Q250 340 236 301T196 196T154 83Q149 61 149 51Q149 26 166 26Q175 26 185 29T208 43T235 78T260 137Q263 149 265 151T282 153Q302 153 302 143Q302 135 293 112T268 61T223 11T161 -11Q129 -11 102 10T74 74Q74 91 79 106T122 220Q160 321 166 341T173 380Q173 404 156 404H154Q124 404 99 371T61 287Q60 286 59 284T58 281T56 279T53 278T49 278T41 278H27Q21 284 21 287Z"></path><path stroke-width="1" id="MJMAIN-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path><path stroke-width="1" id="MJMAIN-2260" d="M166 -215T159 -215T147 -212T141 -204T139 -197Q139 -190 144 -183L306 133H70Q56 140 56 153Q56 168 72 173H327L406 327H72Q56 332 56 347Q56 360 70 367H426Q597 702 602 707Q605 716 618 716Q625 716 630 712T636 703T638 696Q638 692 471 367H707Q722 359 722 347Q722 336 708 328L451 327L371 173H708Q722 163 722 153Q722 140 707 133H351Q175 -210 170 -212Q166 -215 159 -215Z"></path><path stroke-width="1" id="MJMAIN-30" d="M96 585Q152 666 249 666Q297 666 345 640T423 548Q460 465 460 320Q460 165 417 83Q397 41 362 16T301 -15T250 -22Q224 -22 198 -16T137 16T82 83Q39 165 39 320Q39 494 96 585ZM321 597Q291 629 250 629Q208 629 178 597Q153 571 145 525T137 333Q137 175 145 125T181 46Q209 16 250 16Q290 16 318 46Q347 76 354 130T362 333Q362 478 354 524T321 597Z"></path><path stroke-width="1" id="MJMAIN-7C" d="M139 -249H137Q125 -249 119 -235V251L120 737Q130 750 139 750Q152 750 159 735V-235Q151 -249 141 -249H139Z"></path><path stroke-width="1" id="MJMAIN-2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"></path><path stroke-width="1" id="MJMATHI-3BC" d="M58 -216Q44 -216 34 -208T23 -186Q23 -176 96 116T173 414Q186 442 219 442Q231 441 239 435T249 423T251 413Q251 401 220 279T187 142Q185 131 185 107V99Q185 26 252 26Q261 26 270 27T287 31T302 38T315 45T327 55T338 65T348 77T356 88T365 100L372 110L408 253Q444 395 448 404Q461 431 491 431Q504 431 512 424T523 412T525 402L449 84Q448 79 448 68Q448 43 455 35T476 26Q485 27 496 35Q517 55 537 131Q543 151 547 152Q549 153 557 153H561Q580 153 580 144Q580 138 575 117T555 63T523 13Q510 0 491 -8Q483 -10 467 -10Q446 -10 429 -4T402 11T385 29T376 44T374 51L368 45Q362 39 350 30T324 12T288 -4T246 -11Q199 -11 153 12L129 -85Q108 -167 104 -180T92 -202Q76 -216 58 -216Z"></path><path stroke-width="1" id="MJMATHI-3C3" d="M184 -11Q116 -11 74 34T31 147Q31 247 104 333T274 430Q275 431 414 431H552Q553 430 555 429T559 427T562 425T565 422T567 420T569 416T570 412T571 407T572 401Q572 357 507 357Q500 357 490 357T476 358H416L421 348Q439 310 439 263Q439 153 359 71T184 -11ZM361 278Q361 358 276 358Q152 358 115 184Q114 180 114 178Q106 141 106 117Q106 67 131 47T188 26Q242 26 287 73Q316 103 334 153T356 233T361 278Z"></path><path stroke-width="1" id="MJMATHI-71" d="M33 157Q33 258 109 349T280 441Q340 441 372 389Q373 390 377 395T388 406T404 418Q438 442 450 442Q454 442 457 439T460 434Q460 425 391 149Q320 -135 320 -139Q320 -147 365 -148H390Q396 -156 396 -157T393 -175Q389 -188 383 -194H370Q339 -192 262 -192Q234 -192 211 -192T174 -192T157 -193Q143 -193 143 -185Q143 -182 145 -170Q149 -154 152 -151T172 -148Q220 -148 230 -141Q238 -136 258 -53T279 32Q279 33 272 29Q224 -10 172 -10Q117 -10 75 30T33 157ZM352 326Q329 405 277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q233 26 290 98L298 109L352 326Z"></path><path stroke-width="1" id="MJMATHI-70" d="M23 287Q24 290 25 295T30 317T40 348T55 381T75 411T101 433T134 442Q209 442 230 378L240 387Q302 442 358 442Q423 442 460 395T497 281Q497 173 421 82T249 -10Q227 -10 210 -4Q199 1 187 11T168 28L161 36Q160 35 139 -51T118 -138Q118 -144 126 -145T163 -148H188Q194 -155 194 -157T191 -175Q188 -187 185 -190T172 -194Q170 -194 161 -194T127 -193T65 -192Q-5 -192 -24 -194H-32Q-39 -187 -39 -183Q-37 -156 -26 -148H-6Q28 -147 33 -136Q36 -130 94 103T155 350Q156 355 156 364Q156 405 131 405Q109 405 94 377T71 316T59 280Q57 278 43 278H29Q23 284 23 287ZM178 102Q200 26 252 26Q282 26 310 49T356 107Q374 141 392 215T411 325V331Q411 405 350 405Q339 405 328 402T306 393T286 380T269 365T254 350T243 336T235 326L232 322Q232 321 229 308T218 264T204 212Q178 106 178 102Z"></path><path stroke-width="1" id="MJMAIN-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path stroke-width="1" id="MJMAIN-22EF" d="M78 250Q78 274 95 292T138 310Q162 310 180 294T199 251Q199 226 182 208T139 190T96 207T78 250ZM525 250Q525 274 542 292T585 310Q609 310 627 294T646 251Q646 226 629 208T586 190T543 207T525 250ZM972 250Q972 274 989 292T1032 310Q1056 310 1074 294T1093 251Q1093 226 1076 208T1033 190T990 207T972 250Z"></path><path stroke-width="1" id="MJSZ1-221A" d="M263 249Q264 249 315 130T417 -108T470 -228L725 302Q981 837 982 839Q989 850 1001 850Q1008 850 1013 844T1020 832V826L741 243Q645 43 540 -176Q479 -303 469 -324T453 -348Q449 -350 436 -350L424 -349L315 -96Q206 156 205 156L171 130Q138 104 137 104L111 130L263 249Z"></path><path stroke-width="1" id="MJMAIN-38" d="M70 417T70 494T124 618T248 666Q319 666 374 624T429 515Q429 485 418 459T392 417T361 389T335 371T324 363L338 354Q352 344 366 334T382 323Q457 264 457 174Q457 95 399 37T249 -22Q159 -22 101 29T43 155Q43 263 172 335L154 348Q133 361 127 368Q70 417 70 494ZM286 386L292 390Q298 394 301 396T311 403T323 413T334 425T345 438T355 454T364 471T369 491T371 513Q371 556 342 586T275 624Q268 625 242 625Q201 625 165 599T128 534Q128 511 141 492T167 463T217 431Q224 426 228 424L286 386ZM250 21Q308 21 350 55T392 137Q392 154 387 169T375 194T353 216T330 234T301 253T274 270Q260 279 244 289T218 306L210 311Q204 311 181 294T133 239T107 157Q107 98 150 60T250 21Z"></path><path stroke-width="1" id="MJMAIN-34" d="M462 0Q444 3 333 3Q217 3 199 0H190V46H221Q241 46 248 46T265 48T279 53T286 61Q287 63 287 115V165H28V211L179 442Q332 674 334 675Q336 677 355 677H373L379 671V211H471V165H379V114Q379 73 379 66T385 54Q393 47 442 46H471V0H462ZM293 211V545L74 212L183 211H293Z"></path><path stroke-width="1" id="MJSZ1-2211" d="M61 748Q64 750 489 750H913L954 640Q965 609 976 579T993 533T999 516H979L959 517Q936 579 886 621T777 682Q724 700 655 705T436 710H319Q183 710 183 709Q186 706 348 484T511 259Q517 250 513 244L490 216Q466 188 420 134T330 27L149 -187Q149 -188 362 -188Q388 -188 436 -188T506 -189Q679 -189 778 -162T936 -43Q946 -27 959 6H999L913 -249L489 -250Q65 -250 62 -248Q56 -246 56 -239Q56 -234 118 -161Q186 -81 245 -11L428 206Q428 207 242 462L57 717L56 728Q56 744 61 748Z"></path><path stroke-width="1" id="MJMAIN-5E" d="M112 560L249 694L257 686Q387 562 387 560L361 531Q359 532 303 581L250 627L195 580Q182 569 169 557T148 538L140 532Q138 530 125 546L112 560Z"></path></defs></svg></div><div id="MathJax_Message" style="display: none;"></div><div id="root" style="height: 100%"><div style="height: 100%;"><div class="CoreLayout__root"><header class="DqHeader__root"><div class="DqHeader__left_side OnboardingReveal__shown"><a class="DqHeader__back" href="https://app.dataquest.io/dashboard"><span class="dqicon dqicon-left DqHeader__icon"></span><div class="DqHeader__back_text">Dashboard</div></a></div><div class="DqHeader__middle"><div class="DqHeader__mission_title">Introduction to Natural Language Processing</div></div><div class="DqHeader__right_side OnboardingReveal__shown"><div title="Get Help" class="MenuDropdown__menu_close"><div class="HelpScoutLauncher__body"><span class="dqicon dqicon-questions undefined"></span></div></div><div class="MenuDropdown__menu_close"><div class="NotificationLink__root"><span class="dqicon dqicon-alerts undefined"></span><div title="Number of unread notifications" class="NotificationLink__badge DqBadge__root">29</div></div></div><div class="MenuDropdown__menu_close"><div class="ConnectionIndicator__root" title="Connection Status Details"><div class="ConnectionIndicator__good"></div></div></div><div class="MenuDropdown__menu_close"><div class="meta-light DqHeader__user_box"><span>naveen <span class="dqicon dqicon-caret-down undefined"></span></span></div></div></div></header><div class="CoreLayout__view"><div class="MissionView__root"><div class="TheMission__root"><div class="SplitPane TheMission__split_pane vertical " style="display: flex; flex: 1 1 0%; height: 100%; position: absolute; outline: none; overflow: hidden; user-select: text; flex-direction: row; left: 0px; right: 0px;"><div class="Pane vertical Pane1  " style="flex: 0 0 auto; position: relative; outline: none; width: 50%;"><div class="TheMission__is_interactive"><div class="MissionInformation__light OnboardingReveal__shown"><div class="MissionTabs__root"><div class="OnboardingReveal__shown"><div class="MissionTabs__button_selected">Learn</div></div><div class="OnboardingReveal__shown"><div class="MissionTabs__button">FAQ</div></div><div class="OnboardingReveal__shown"><div class="MissionTabs__button">Mission Reference</div></div></div><div class="MissionInformation__body"><div class="MissionLearn__light ScrollAccordion__root"><div class="ScrollAccordion__top_headers" style="width: 635px;"><div id="onboarding-tip-learn" theme="light" class="ScrollAccordion__in_header SidePanelTitle__light">Learn</div><div id="onboarding-tip-instructions" theme="light" class="ScrollAccordion__in_header SidePanelTitle__light">instructions</div></div><div class="ScrollAccordion__body"><div class="ScrollAccordion__section"><div theme="light" class="ScrollAccordion__in_text SidePanelTitle__light" style="opacity: 0;">Learn</div><iframe style="height: 100%; width: 100%; border: none; background: transparent; position: absolute; z-index: -1; top: 0px; left: 0px;" src="./5_files/saved_resource.html"></iframe><div id="body" class="MissionLearn__section MissionMarkup__light"><div><p>Now that we have our tokens, we can begin converting the sentences to their numerical representations.  First, we'll retrieve all of the unique words from all of the headlines.  Then, we'll create a matrix, and assign those words as the column headers.  We'll initialize all of the values in the matrix to <code>0</code>.</p>
+<div><diagram><svg class="diagram" xmlns="http://www.w3.org/2000/svg" version="1.1" height="432" width="488"><g transform="translate(8,16 )">
+<path d="M 64,80 L 64,144 " style="fill:none;stroke:#000;"></path>
+<path d="M 64,224 L 64,288 " style="fill:none;stroke:#000;"></path>
+<path d="M 264,80 L 264,144 " style="fill:none;stroke:#000;"></path>
+<path d="M 264,224 L 264,288 " style="fill:none;stroke:#000;"></path>
+<polygon points="272,288 260,282.4 260,293.6 " style="fill:#000" transform="rotate(90,264,288 )"></polygon>
+<polygon points="272,144 260,138.4 260,149.6 " style="fill:#000" transform="rotate(90,264,144 )"></polygon>
+<polygon points="72,288 60,282.4 60,293.6 " style="fill:#000" transform="rotate(90,64,288 )"></polygon>
+<polygon points="72,144 60,138.4 60,149.6 " style="fill:#000" transform="rotate(90,64,144 )"></polygon>
+<g transform="translate(0,0)"><text text-anchor="middle" x="0" y="20" style="fill:#000">1</text><text text-anchor="middle" x="32" y="20" style="fill:#000">[</text><text text-anchor="middle" x="40" y="20" style="fill:#000">i</text><text text-anchor="middle" x="48" y="20" style="fill:#000">,</text><text text-anchor="middle" x="64" y="20" style="fill:#000">r</text><text text-anchor="middle" x="72" y="20" style="fill:#000">o</text><text text-anchor="middle" x="80" y="20" style="fill:#000">d</text><text text-anchor="middle" x="88" y="20" style="fill:#000">e</text><text text-anchor="middle" x="96" y="20" style="fill:#000">,</text><text text-anchor="middle" x="112" y="20" style="fill:#000">m</text><text text-anchor="middle" x="120" y="20" style="fill:#000">y</text><text text-anchor="middle" x="128" y="20" style="fill:#000">,</text><text text-anchor="middle" x="144" y="20" style="fill:#000">h</text><text text-anchor="middle" x="152" y="20" style="fill:#000">o</text><text text-anchor="middle" x="160" y="20" style="fill:#000">r</text><text text-anchor="middle" x="168" y="20" style="fill:#000">s</text><text text-anchor="middle" x="176" y="20" style="fill:#000">e</text><text text-anchor="middle" x="184" y="20" style="fill:#000">,</text><text text-anchor="middle" x="200" y="20" style="fill:#000">t</text><text text-anchor="middle" x="208" y="20" style="fill:#000">o</text><text text-anchor="middle" x="216" y="20" style="fill:#000">,</text><text text-anchor="middle" x="232" y="20" style="fill:#000">b</text><text text-anchor="middle" x="240" y="20" style="fill:#000">e</text><text text-anchor="middle" x="248" y="20" style="fill:#000">r</text><text text-anchor="middle" x="256" y="20" style="fill:#000">l</text><text text-anchor="middle" x="264" y="20" style="fill:#000">i</text><text text-anchor="middle" x="272" y="20" style="fill:#000">n</text><text text-anchor="middle" x="280" y="20" style="fill:#000">]</text><text text-anchor="middle" x="0" y="52" style="fill:#000">2</text><text text-anchor="middle" x="32" y="52" style="fill:#000">[</text><text text-anchor="middle" x="40" y="52" style="fill:#000">y</text><text text-anchor="middle" x="48" y="52" style="fill:#000">o</text><text text-anchor="middle" x="56" y="52" style="fill:#000">u</text><text text-anchor="middle" x="64" y="52" style="fill:#000">,</text><text text-anchor="middle" x="80" y="52" style="fill:#000">r</text><text text-anchor="middle" x="88" y="52" style="fill:#000">o</text><text text-anchor="middle" x="96" y="52" style="fill:#000">d</text><text text-anchor="middle" x="104" y="52" style="fill:#000">e</text><text text-anchor="middle" x="112" y="52" style="fill:#000">,</text><text text-anchor="middle" x="128" y="52" style="fill:#000">m</text><text text-anchor="middle" x="136" y="52" style="fill:#000">y</text><text text-anchor="middle" x="144" y="52" style="fill:#000">,</text><text text-anchor="middle" x="160" y="52" style="fill:#000">h</text><text text-anchor="middle" x="168" y="52" style="fill:#000">o</text><text text-anchor="middle" x="176" y="52" style="fill:#000">r</text><text text-anchor="middle" x="184" y="52" style="fill:#000">s</text><text text-anchor="middle" x="192" y="52" style="fill:#000">e</text><text text-anchor="middle" x="200" y="52" style="fill:#000">,</text><text text-anchor="middle" x="216" y="52" style="fill:#000">t</text><text text-anchor="middle" x="224" y="52" style="fill:#000">o</text><text text-anchor="middle" x="232" y="52" style="fill:#000">,</text><text text-anchor="middle" x="248" y="52" style="fill:#000">b</text><text text-anchor="middle" x="256" y="52" style="fill:#000">e</text><text text-anchor="middle" x="264" y="52" style="fill:#000">r</text><text text-anchor="middle" x="272" y="52" style="fill:#000">l</text><text text-anchor="middle" x="280" y="52" style="fill:#000">i</text><text text-anchor="middle" x="288" y="52" style="fill:#000">n</text><text text-anchor="middle" x="296" y="52" style="fill:#000">,</text><text text-anchor="middle" x="312" y="52" style="fill:#000">i</text><text text-anchor="middle" x="320" y="52" style="fill:#000">n</text><text text-anchor="middle" x="328" y="52" style="fill:#000">,</text><text text-anchor="middle" x="344" y="52" style="fill:#000">t</text><text text-anchor="middle" x="352" y="52" style="fill:#000">h</text><text text-anchor="middle" x="360" y="52" style="fill:#000">e</text><text text-anchor="middle" x="368" y="52" style="fill:#000">,</text><text text-anchor="middle" x="384" y="52" style="fill:#000">w</text><text text-anchor="middle" x="392" y="52" style="fill:#000">i</text><text text-anchor="middle" x="400" y="52" style="fill:#000">n</text><text text-anchor="middle" x="408" y="52" style="fill:#000">t</text><text text-anchor="middle" x="416" y="52" style="fill:#000">e</text><text text-anchor="middle" x="424" y="52" style="fill:#000">r</text><text text-anchor="middle" x="432" y="52" style="fill:#000">]</text><text text-anchor="middle" x="104" y="116" style="fill:#000">U</text><text text-anchor="middle" x="112" y="116" style="fill:#000">n</text><text text-anchor="middle" x="120" y="116" style="fill:#000">i</text><text text-anchor="middle" x="128" y="116" style="fill:#000">q</text><text text-anchor="middle" x="136" y="116" style="fill:#000">u</text><text text-anchor="middle" x="144" y="116" style="fill:#000">e</text><text text-anchor="middle" x="160" y="116" style="fill:#000">w</text><text text-anchor="middle" x="168" y="116" style="fill:#000">o</text><text text-anchor="middle" x="176" y="116" style="fill:#000">r</text><text text-anchor="middle" x="184" y="116" style="fill:#000">d</text><text text-anchor="middle" x="192" y="116" style="fill:#000">s</text><text text-anchor="middle" x="32" y="196" style="fill:#000">[</text><text text-anchor="middle" x="40" y="196" style="fill:#000">i</text><text text-anchor="middle" x="48" y="196" style="fill:#000">,</text><text text-anchor="middle" x="64" y="196" style="fill:#000">r</text><text text-anchor="middle" x="72" y="196" style="fill:#000">o</text><text text-anchor="middle" x="80" y="196" style="fill:#000">d</text><text text-anchor="middle" x="88" y="196" style="fill:#000">e</text><text text-anchor="middle" x="96" y="196" style="fill:#000">,</text><text text-anchor="middle" x="112" y="196" style="fill:#000">m</text><text text-anchor="middle" x="120" y="196" style="fill:#000">y</text><text text-anchor="middle" x="128" y="196" style="fill:#000">,</text><text text-anchor="middle" x="144" y="196" style="fill:#000">h</text><text text-anchor="middle" x="152" y="196" style="fill:#000">o</text><text text-anchor="middle" x="160" y="196" style="fill:#000">r</text><text text-anchor="middle" x="168" y="196" style="fill:#000">s</text><text text-anchor="middle" x="176" y="196" style="fill:#000">e</text><text text-anchor="middle" x="184" y="196" style="fill:#000">,</text><text text-anchor="middle" x="200" y="196" style="fill:#000">t</text><text text-anchor="middle" x="208" y="196" style="fill:#000">o</text><text text-anchor="middle" x="216" y="196" style="fill:#000">,</text><text text-anchor="middle" x="232" y="196" style="fill:#000">b</text><text text-anchor="middle" x="240" y="196" style="fill:#000">e</text><text text-anchor="middle" x="248" y="196" style="fill:#000">r</text><text text-anchor="middle" x="256" y="196" style="fill:#000">l</text><text text-anchor="middle" x="264" y="196" style="fill:#000">i</text><text text-anchor="middle" x="272" y="196" style="fill:#000">n</text><text text-anchor="middle" x="280" y="196" style="fill:#000">,</text><text text-anchor="middle" x="296" y="196" style="fill:#000">i</text><text text-anchor="middle" x="304" y="196" style="fill:#000">n</text><text text-anchor="middle" x="312" y="196" style="fill:#000">,</text><text text-anchor="middle" x="328" y="196" style="fill:#000">t</text><text text-anchor="middle" x="336" y="196" style="fill:#000">h</text><text text-anchor="middle" x="344" y="196" style="fill:#000">e</text><text text-anchor="middle" x="352" y="196" style="fill:#000">,</text><text text-anchor="middle" x="368" y="196" style="fill:#000">w</text><text text-anchor="middle" x="376" y="196" style="fill:#000">i</text><text text-anchor="middle" x="384" y="196" style="fill:#000">n</text><text text-anchor="middle" x="392" y="196" style="fill:#000">t</text><text text-anchor="middle" x="400" y="196" style="fill:#000">e</text><text text-anchor="middle" x="408" y="196" style="fill:#000">r</text><text text-anchor="middle" x="416" y="196" style="fill:#000">,</text><text text-anchor="middle" x="432" y="196" style="fill:#000">y</text><text text-anchor="middle" x="440" y="196" style="fill:#000">o</text><text text-anchor="middle" x="448" y="196" style="fill:#000">u</text><text text-anchor="middle" x="456" y="196" style="fill:#000">]</text><text text-anchor="middle" x="112" y="260" style="fill:#000">C</text><text text-anchor="middle" x="120" y="260" style="fill:#000">o</text><text text-anchor="middle" x="128" y="260" style="fill:#000">n</text><text text-anchor="middle" x="136" y="260" style="fill:#000">s</text><text text-anchor="middle" x="144" y="260" style="fill:#000">t</text><text text-anchor="middle" x="152" y="260" style="fill:#000">r</text><text text-anchor="middle" x="160" y="260" style="fill:#000">u</text><text text-anchor="middle" x="168" y="260" style="fill:#000">c</text><text text-anchor="middle" x="176" y="260" style="fill:#000">t</text><text text-anchor="middle" x="192" y="260" style="fill:#000">m</text><text text-anchor="middle" x="200" y="260" style="fill:#000">a</text><text text-anchor="middle" x="208" y="260" style="fill:#000">t</text><text text-anchor="middle" x="216" y="260" style="fill:#000">r</text><text text-anchor="middle" x="224" y="260" style="fill:#000">i</text><text text-anchor="middle" x="232" y="260" style="fill:#000">x</text><text text-anchor="middle" x="64" y="324" style="fill:#000">i</text><text text-anchor="middle" x="88" y="324" style="fill:#000">y</text><text text-anchor="middle" x="96" y="324" style="fill:#000">o</text><text text-anchor="middle" x="104" y="324" style="fill:#000">u</text><text text-anchor="middle" x="128" y="324" style="fill:#000">r</text><text text-anchor="middle" x="136" y="324" style="fill:#000">o</text><text text-anchor="middle" x="144" y="324" style="fill:#000">d</text><text text-anchor="middle" x="152" y="324" style="fill:#000">e</text><text text-anchor="middle" x="176" y="324" style="fill:#000">m</text><text text-anchor="middle" x="184" y="324" style="fill:#000">y</text><text text-anchor="middle" x="208" y="324" style="fill:#000">h</text><text text-anchor="middle" x="216" y="324" style="fill:#000">o</text><text text-anchor="middle" x="224" y="324" style="fill:#000">r</text><text text-anchor="middle" x="232" y="324" style="fill:#000">s</text><text text-anchor="middle" x="240" y="324" style="fill:#000">e</text><text text-anchor="middle" x="264" y="324" style="fill:#000">t</text><text text-anchor="middle" x="272" y="324" style="fill:#000">o</text><text text-anchor="middle" x="296" y="324" style="fill:#000">b</text><text text-anchor="middle" x="304" y="324" style="fill:#000">e</text><text text-anchor="middle" x="312" y="324" style="fill:#000">r</text><text text-anchor="middle" x="320" y="324" style="fill:#000">l</text><text text-anchor="middle" x="328" y="324" style="fill:#000">i</text><text text-anchor="middle" x="336" y="324" style="fill:#000">n</text><text text-anchor="middle" x="360" y="324" style="fill:#000">i</text><text text-anchor="middle" x="368" y="324" style="fill:#000">n</text><text text-anchor="middle" x="392" y="324" style="fill:#000">t</text><text text-anchor="middle" x="400" y="324" style="fill:#000">h</text><text text-anchor="middle" x="408" y="324" style="fill:#000">e</text><text text-anchor="middle" x="432" y="324" style="fill:#000">w</text><text text-anchor="middle" x="440" y="324" style="fill:#000">i</text><text text-anchor="middle" x="448" y="324" style="fill:#000">n</text><text text-anchor="middle" x="456" y="324" style="fill:#000">t</text><text text-anchor="middle" x="464" y="324" style="fill:#000">e</text><text text-anchor="middle" x="472" y="324" style="fill:#000">r</text><text text-anchor="middle" x="32" y="356" style="fill:#000">1</text><text text-anchor="middle" x="64" y="356" style="fill:#000">0</text><text text-anchor="middle" x="88" y="356" style="fill:#000">0</text><text text-anchor="middle" x="128" y="356" style="fill:#000">0</text><text text-anchor="middle" x="176" y="356" style="fill:#000">0</text><text text-anchor="middle" x="208" y="356" style="fill:#000">0</text><text text-anchor="middle" x="264" y="356" style="fill:#000">0</text><text text-anchor="middle" x="296" y="356" style="fill:#000">0</text><text text-anchor="middle" x="360" y="356" style="fill:#000">0</text><text text-anchor="middle" x="392" y="356" style="fill:#000">0</text><text text-anchor="middle" x="432" y="356" style="fill:#000">0</text><text text-anchor="middle" x="32" y="388" style="fill:#000">2</text><text text-anchor="middle" x="64" y="388" style="fill:#000">0</text><text text-anchor="middle" x="88" y="388" style="fill:#000">0</text><text text-anchor="middle" x="128" y="388" style="fill:#000">0</text><text text-anchor="middle" x="176" y="388" style="fill:#000">0</text><text text-anchor="middle" x="208" y="388" style="fill:#000">0</text><text text-anchor="middle" x="264" y="388" style="fill:#000">0</text><text text-anchor="middle" x="296" y="388" style="fill:#000">0</text><text text-anchor="middle" x="360" y="388" style="fill:#000">0</text><text text-anchor="middle" x="392" y="388" style="fill:#000">0</text><text text-anchor="middle" x="432" y="388" style="fill:#000">0</text></g></g></svg></diagram></div>
+<p>We'll use a pandas dataframe instead of a NumPy matrix.  We can create a dataframe with all zero values using this syntax:  </p>
+</div><div class="dq_theme MissionMarkup__light-code DqEditor__root"><textarea autocomplete="off" style="display: none;">pd.DataFrame(0, index=np.arange(len(clean_tokenized)), columns=unique_tokens)</textarea><div class="CodeMirror cm-s-dq-light CodeMirror-wrap"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 7.5px; left: 4px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" cm-not-content="true"><div style="min-width: 1px; height: 0px;"></div></div><div class="CodeMirror-hscrollbar" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: -15px; border-right-width: 15px; min-height: 55px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors"><div class="CodeMirror-cursor" style="left: 4px; top: 0px; height: 17.5px;">&nbsp;</div></div><div class="CodeMirror-code" role="presentation"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">pd</span>.<span class="cm-property">DataFrame</span>(<span class="cm-number">0</span>, <span class="cm-variable">index</span><span class="cm-operator">=</span><span class="cm-variable">np</span>.<span class="cm-property">arange</span>(<span class="cm-builtin">len</span>(<span class="cm-variable">clean_tokenized</span>)), <span class="cm-variable">columns</span><span class="cm-operator">=</span><span class="cm-variable">unique_tokens</span>)</span></pre></div></div></div></div></div><div style="position: absolute; height: 15px; width: 1px; border-bottom: 0px solid transparent; top: 55px;"></div><div class="CodeMirror-gutters" style="display: none; height: 70px;"></div></div></div></div><div>
+<p>The code above will create a dataframe with as many rows as the number of items in <code>clean_tokenized</code>.  Each column name will be a word from <code>unique_tokens</code>.  This assumes that we already assigned the unique tokens to <code>unique_tokens</code>.  Each cell in the dataframe will have the value <code>0</code>.  You can find more documentation on initializing a dataframe <a target="_blank" href="http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html">in the pandas documentation</a>.</p></div></div></div><div class="ScrollAccordion__section"><div theme="light" class="ScrollAccordion__in_text SidePanelTitle__light" style="opacity: 0;">instructions</div><iframe style="height: 100%; width: 100%; border: none; background: transparent; position: absolute; z-index: -1; top: 0px; left: 0px;" src="./5_files/saved_resource(2).html"></iframe><div id="body" class="MissionLearn__instructions MissionMarkup__light"><ul>
+<li>Find all of the unique tokens in <code>clean_tokenized</code>, and assign the result to <code>unique_tokens</code>.<ul>
+<li>Only add tokens that occur more than once (across all of the headlines).  Tokens that only occur once don't add anything to the model's prediction power, and removing them will make our algorithm run much more quickly.</li>
+<li>To do this, you can keep a list of the tokens that occur once in the data, and a different list of the tokens that occur more than once.  If a token is already in the first list when you encounter it and it's not in the second list, you should add it to the second list.</li>
+<li>When you're finished, <code>unique_tokens</code> should contain any tokens that occur more than once across all of the headlines.</li>
+<li>Each token in <code>unique_tokens</code> should only appear in the list a single time.</li>
+</ul>
+</li>
+<li>Create a dataframe with as many rows as there are items in the <code>clean_tokenized</code> list.  Each column name should be a token in <code>unique_tokens</code>.  Initialize all of the cells to the value <code>0</code>. Assign the dataframe to the variable <code>counts</code>.</li>
+</ul></div><div class="MissionLearn__section"><div theme="light" class="DqDropMenu__close"><div class="DqDropMenu__top"><div class="DqDropMenu__text">Get Help</div><div class="DqDropMenu__icon"><span class="dqicon dqicon-down undefined"></span></div></div><div class="DqDropMenu__options"><div class="DqDropMenu__option">Get a hint</div><div class="DqDropMenu__option" title="[alt+a] to See the answer">See the answer</div><div class="DqDropMenu__option">Discuss this lesson</div><div class="DqDropMenu__option">Message Us</div></div></div></div></div><div class="ScrollAccordion__section"><div theme="light" class="ScrollAccordion__in_text SidePanelTitle__light" style="opacity: 0;">The Answer</div><iframe style="height: 100%; width: 100%; border: none; background: transparent; position: absolute; z-index: -1; top: 0px; left: 0px;" src="./5_files/saved_resource(3).html"></iframe><div class="dq_theme MissionLearn__solution DqEditor__root"><textarea autocomplete="off" style="display: none;">import numpy as np
+unique_tokens = []
+single_tokens = []
+for tokens in clean_tokenized:
+    for token in tokens:
+        if token not in single_tokens:
+            single_tokens.append(token)
+        elif token in single_tokens and token not in unique_tokens:
+            unique_tokens.append(token)
+
+counts = pd.DataFrame(0, index=np.arange(len(clean_tokenized)), columns=unique_tokens)</textarea><div class="CodeMirror cm-s-dq-light CodeMirror-wrap"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 205px; left: 199px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" cm-not-content="true"><div style="min-width: 1px; height: 0px;"></div></div><div class="CodeMirror-hscrollbar" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 30px; margin-bottom: -15px; border-right-width: 15px; min-height: 235px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre>x</pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors" style="visibility: hidden;"><div class="CodeMirror-cursor" style="left: 169px; top: 197.5px; height: 18.5px;">&nbsp;</div></div><div class="CodeMirror-code CodeMirror-crosshair" role="presentation" style=""><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">1</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">import</span> <span class="cm-variable">numpy</span> <span class="cm-keyword">as</span> <span class="cm-variable">np</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">2</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">unique_tokens</span> <span class="cm-operator">=</span> []</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">3</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">single_tokens</span> <span class="cm-operator">=</span> []</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">4</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">for</span> <span class="cm-variable">tokens</span> <span class="cm-keyword">in</span> <span class="cm-variable">clean_tokenized</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">5</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-keyword">for</span> <span class="cm-variable">token</span> <span class="cm-keyword">in</span> <span class="cm-variable">tokens</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">6</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-keyword">if</span> <span class="cm-variable">token</span> <span class="cm-keyword">not</span> <span class="cm-keyword">in</span> <span class="cm-variable">single_tokens</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">7</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-variable">single_tokens</span>.<span class="cm-property">append</span>(<span class="cm-variable">token</span>)</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">8</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-keyword">elif</span> <span class="cm-variable">token</span> <span class="cm-keyword">in</span> <span class="cm-variable">single_tokens</span> <span class="cm-keyword">and</span> <span class="cm-variable">token</span> <span class="cm-keyword">not</span> <span class="cm-keyword">in</span> <span class="cm-variable">unique_tokens</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">9</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-variable">unique_tokens</span>.<span class="cm-property">append</span>(<span class="cm-variable">token</span>)</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">10</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">11</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">counts</span> <span class="cm-operator">=</span> <span class="cm-variable">pd</span>.<span class="cm-property">DataFrame</span>(<span class="cm-number">0</span>, <span class="cm-variable">index</span><span class="cm-operator">=</span><span class="cm-variable">np</span>.<span class="cm-property">arange</span>(<span class="cm-builtin">len</span>(<span class="cm-variable">clean_tokenized</span>)), <span class="cm-variable">columns</span><span class="cm-operator">=</span><span class="cm-variable">unique_tokens</span>)</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 15px; width: 1px; border-bottom: 0px solid transparent; top: 235px;"></div><div class="CodeMirror-gutters" style="height: 250px; left: 0px;"><div class="CodeMirror-gutter CodeMirror-linenumbers" style="width: 29px;"></div></div></div></div></div></div></div><div class="ScrollAccordion__bottom_headers" style="width: 635px;"><div theme="light" class="ScrollAccordion__in_header SidePanelTitle__light">The Answer</div></div></div></div></div></div></div><span class="Resizer vertical "></span><div class="Pane vertical Pane2  " style="flex: 1 1 0%; position: relative; outline: none;"><div class="TheMission__is_interactive"><div><div class="TaskPanels__root OnboardingReveal__shown"><div class="TaskPanels__light"><div class="TaskPanels__editor_section"><div class="MissionEditorFiles__light"><span class="meta MissionEditorFiles__file_active"><div title="[alt+t] to toggle open">script.py</div></span><span class="meta MissionEditorFiles__file"><div title="/dataquest/user/sel_hn_stories.csv">sel_hn_stories.csv</div></span></div><div class="TaskPanels__editor_with_extra"><div class="dq_theme  DqEditor__root"><textarea autocomplete="off" style="display: none;">import numpy as np
+unique_tokens = []
+single_tokens = []
+for tokens in clean_tokenized:
+    for token in tokens:
+        if token not in single_tokens:
+            single_tokens.append(token)
+        elif token in single_tokens and token not in unique_tokens:
+            unique_tokens.append(token)
+
+counts = pd.DataFrame(0, index=np.arange(len(clean_tokenized)), columns=unique_tokens)</textarea><div class="CodeMirror cm-s-dq-light CodeMirror-wrap"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 205px; left: 199px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" cm-not-content="true"><div style="min-width: 1px; height: 0px;"></div></div><div class="CodeMirror-hscrollbar" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 30px; margin-bottom: -15px; border-right-width: 15px; min-height: 235px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre>x</pre><div class="CodeMirror-linenumber CodeMirror-gutter-elt"><div>10</div></div><div class="CodeMirror-linenumber CodeMirror-gutter-elt"><div>3</div></div><div class="CodeMirror-linenumber CodeMirror-gutter-elt"><div>11</div></div></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors" style="visibility: hidden;"><div class="CodeMirror-cursor" style="left: 169px; top: 197.5px; height: 18.5px;">&nbsp;</div></div><div class="CodeMirror-code" role="presentation" style=""><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">1</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">import</span> <span class="cm-variable">numpy</span> <span class="cm-keyword">as</span> <span class="cm-variable">np</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">2</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">unique_tokens</span> <span class="cm-operator">=</span> []</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">3</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">single_tokens</span> <span class="cm-operator">=</span> []</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">4</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">for</span> <span class="cm-variable">tokens</span> <span class="cm-keyword">in</span> <span class="cm-variable">clean_tokenized</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">5</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-keyword">for</span> <span class="cm-variable">token</span> <span class="cm-keyword">in</span> <span class="cm-variable">tokens</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">6</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-keyword">if</span> <span class="cm-variable">token</span> <span class="cm-keyword">not</span> <span class="cm-keyword">in</span> <span class="cm-variable">single_tokens</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">7</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-variable">single_tokens</span>.<span class="cm-property">append</span>(<span class="cm-variable">token</span>)</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">8</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-keyword">elif</span> <span class="cm-variable">token</span> <span class="cm-keyword">in</span> <span class="cm-variable">single_tokens</span> <span class="cm-keyword">and</span> <span class="cm-variable">token</span> <span class="cm-keyword">not</span> <span class="cm-keyword">in</span> <span class="cm-variable">unique_tokens</span>:</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">9</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-variable">unique_tokens</span>.<span class="cm-property">append</span>(<span class="cm-variable">token</span>)</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">10</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -30px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 21px;">11</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">counts</span> <span class="cm-operator">=</span> <span class="cm-variable">pd</span>.<span class="cm-property">DataFrame</span>(<span class="cm-number">0</span>, <span class="cm-variable">index</span><span class="cm-operator">=</span><span class="cm-variable">np</span>.<span class="cm-property">arange</span>(<span class="cm-builtin">len</span>(<span class="cm-variable">clean_tokenized</span>)), <span class="cm-variable">columns</span><span class="cm-operator">=</span><span class="cm-variable">unique_tokens</span>)</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 15px; width: 1px; border-bottom: 0px solid transparent; top: 235px;"></div><div class="CodeMirror-gutters" style="height: 250px; left: 0px;"><div class="CodeMirror-gutter CodeMirror-linenumbers" style="width: 29px;"></div></div></div></div></div><div class="TaskPanels__extra_lines"></div></div></div><div class="TaskPanels__outputs"><div class="MissionResultFormat__light"><div class="MissionResultFormat__title">Variables</div><div id="var-4-counts" class="code "><div class="MissionVariableLine__button"><span class="dqicon dqicon-caret-down undefined"></span> counts<span class="MissionVariableLine__type">DataFrame (&lt;class 'pandas.core.frame.DataFrame'&gt;)</span></div><div class="MissionVariableLine__html_value"><div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>and</th>
+      <th>for</th>
+      <th>as</th>
+      <th>you</th>
+      <th>is</th>
+      <th>the</th>
+      <th>split</th>
+      <th>good</th>
+      <th>how</th>
+      <th>what</th>
+      <th>...</th>
+      <th>frameworks</th>
+      <th>animated</th>
+      <th>walks</th>
+      <th>auctions</th>
+      <th>clouds</th>
+      <th>hammer</th>
+      <th>autonomous</th>
+      <th>vehicle</th>
+      <th>crowdsourcing</th>
+      <th>disaster</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>2795</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2796</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2797</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2798</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>2799</th>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+<p>2800 rows × 2310 columns</p>
+</div></div></div><div id="var-4-clean_tokenized" class="code "><div class="MissionVariableLine__button"><span class="dqicon dqicon-caret-right undefined"></span> clean_tokenized</div></div><div id="var-4-single_tokens" class="code "><div class="MissionVariableLine__button"><span class="dqicon dqicon-caret-right undefined"></span> single_tokens</div></div><div id="var-4-unique_tokens" class="code "><div class="MissionVariableLine__button"><span class="dqicon dqicon-caret-right undefined"></span> unique_tokens</div></div><div id="var-4-tokens" class="code "><div class="MissionVariableLine__button"><span class="dqicon dqicon-caret-right undefined"></span> tokens</div></div><div id="var-4-token" class="code "><div class="MissionVariableLine__button"><span class="dqicon dqicon-caret-right undefined"></span> token</div></div></div></div></div><div class="EditorActionsAndFeedback__root"><div class="EditorActionsAndFeedback__actions"><div class="MissionCodeActions__root OnboardingReveal__shown"><button title="Check your code [alt+enter]" id="onboarding-tip-run" class="DqButton__main DqButton__short DqButton__green DqButton__on_dark"><span class="DqButton__text">Run</span></button><div class="MissionCodeActions__rest_buttons OnboardingReveal__shown"><button title="Restore to initial code [alt+r]" class="MissionCodeActions__reset DqButton__main DqButton__short DqButton__no_text DqButton__white DqButton__on_dark DqButton__hollow DqButton__borderless"><span class="dqicon dqicon-recycle DqButton__icon"></span></button><div class="MissionCodeActions__spacer"></div><button title="Open Console [alt+t]" class="DqButton__main DqButton__short DqButton__white DqButton__on_dark DqButton__hollow"><span class="DqButton__text">Open Console</span></button></div></div></div></div></div></div></div></div></div><div class="MissionFooter__root OnboardingReveal__shown"><div class="MissionFooter__title_side"><span class="dqicon dqicon-bars MissionFooter__more"></span><div class="MissionFooter__title">5. Assembling a Matrix of Unique Words</div></div><div class="MissionFooter__center"><button title="[alt+b] Back a Screen" class="MissionFooter__nav_button DqButton__main DqButton__short DqButton__white DqButton__on_dark DqButton__hollow"><span class="DqButton__text">back</span></button><div>5 / 12</div><button title="[alt+n] Next Screen" class="MissionFooter__nav_button DqButton__main DqButton__short DqButton__white DqButton__on_dark DqButton__hollow"><span class="DqButton__text">Next</span></button></div><div class="MissionFooter__right_side"></div></div></div></div></div></div></div></div><script crossorigin="" type="text/javascript" src="./5_files/polyfill.min.js"></script><script crossorigin="" type="text/javascript" src="./5_files/lodash.min.js"></script><script crossorigin="" type="text/javascript" src="./5_files/react.production.min.js"></script><script crossorigin="" type="text/javascript" src="./5_files/react-dom.production.min.js"></script><script type="text/javascript">!function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="3.1.0";
+  var key = window.location.host === 'app.dataquest.io' ? 'BJhKYEXejzjqXq7xQDFI6N0M5W7HBAH5' : 'yPkme4oLIogTJ7xrH3SCEDVtcSz2J5Br';
+  analytics.load(key);
+  }}();</script><script src="./5_files/pa-5cd96b34fed2bd0016000186.js" async=""></script><script type="text/javascript" src="./5_files/app.5079fdbd4767bcb1133f.js"></script><script type="text/javascript" id="">(function(a,e,f,g,b,c,d){a.ProfitWellObject=b;a[b]=a[b]||function(){(a[b].q=a[b].q||[]).push(arguments)};a[b].l=1*new Date;c=e.createElement(f);d=e.getElementsByTagName(f)[0];c.async=1;c.src=g;d.parentNode.insertBefore(c,d)})(window,document,"script","https://dna8twue3dlxq.cloudfront.net/js/profitwell.js","profitwell");profitwell("auth_token","bd8a22377119e7044e07346a8c89a91f");profitwell("user_email","USER@EMAIL.COM");</script><script type="text/javascript" id="" charset="utf-8" src="./5_files/b960428aed859499a86a27f8ce0a0a6bd2ea6c87.js"></script><iframe id="intercom-frame" aria-hidden="true" style="display: none;" src="./5_files/saved_resource(4).html"></iframe><script src="./5_files/saved_resource(1)" type="text/javascript"></script><div id="intercom-css-container"><style data-emotion="intercom-global"></style></div><div id="intercom-container" class="intercom-namespace"><style>html.intercom-mobile-messenger-active,html.intercom-mobile-messenger-active > body,html.intercom-modal-open,#intercom-container-body{overflow:hidden !important;}html.intercom-mobile-messenger-active,html.intercom-mobile-messenger-active > body{position:static !important;}html.intercom-mobile-messenger-active > body{height:0 !important;margin:0 !important;}</style><div class="intercom-app" aria-live="polite"><div id="intercom-modal-container"></div></div></div><div style="visibility: hidden; position: absolute; width: 100%; top: -10000px; left: 0px; right: 0px; transition: visibility 0s linear 0.3s, opacity 0.3s linear 0s; opacity: 0;"><div style="width: 100%; height: 100%; position: fixed; top: 0px; left: 0px; z-index: 2000000000; background-color: rgb(255, 255, 255); opacity: 0.5;"></div><div style="margin: 0px auto; top: 0px; left: 0px; right: 0px; position: absolute; border: 1px solid rgb(204, 204, 204); z-index: 2000000000; background-color: rgb(255, 255, 255); overflow: hidden;"><iframe title="recaptcha challenge" src="./5_files/bframe.html" name="c-cs61rhoq3m5j" frameborder="0" scrolling="no" sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation allow-modals allow-popups-to-escape-sandbox" style="width: 100%; height: 100%;"></iframe></div></div><div id="beacon-container"><div data-reactroot="" class="Beacon"><div class="css-k7cd9d e1i7t89x0"></div><div class="BeaconContainer is-configDisplayRight is-manual css-1kzkca e1swzdlb0" data-css-with-delay="false"><button data-cy="beacon-close-button" class="c-BeaconCloseButton is-rendered css-5h58m2 e10lzuie0"><span class="c-BeaconCloseButton__label css-5th59a e10lzuie1"><span data-cy-component="Text" data-cy="Text" data-blue-ppap="blue" class="c-Text is-span is-13 is-default css-51ld55">Close</span></span><span aria-hidden="true" data-cy-component="Icon" data-cy="Icon" data-blue-ppap="blue" class="c-Icon is-noInteract is-iconName-cross-small is-24 c-BeaconCloseButton__iconClose css-13srjxa" data-icon-name="cross-small"><span class="c-Icon__icon" title="cross-small"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M13.414 12l2.293-2.293a.999.999 0 1 0-1.414-1.414L12 10.586 9.707 8.293a.999.999 0 1 0-1.414 1.414L10.586 12l-2.293 2.293a.999.999 0 1 0 1.414 1.414L12 13.414l2.293 2.293a.997.997 0 0 0 1.414 0 .999.999 0 0 0 0-1.414L13.414 12z"></path></svg></span><span class="c-VisuallyHidden css-1rt3v4g">cross-small</span></span></button></div><!-- react-empty: 10 --><span></span><!-- react-empty: 12 --></div></div></body></html>
